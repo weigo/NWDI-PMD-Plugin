@@ -18,7 +18,7 @@ import org.arachna.netweaver.dc.types.DevelopmentComponent;
 
 /**
  * Executor for CPD (Copy Paste Detector).
- * 
+ *
  * @author Dirk Weigenand
  */
 public final class CpdExecutor {
@@ -32,8 +32,22 @@ public final class CpdExecutor {
      */
     private final AntHelper antHelper;
 
-    public CpdExecutor(final AntHelper antHelper) {
+    /**
+     * Create an instance of <code>CpdExecutor</code> using the given
+     * {@link AntHelper} and development components.
+     *
+     * @param antHelper
+     *            helper class for preparing ant tasks for execution.
+     * @param components
+     *            development components to check for Copy and Pasted source
+     *            code.
+     */
+    public CpdExecutor(final AntHelper antHelper, Collection<DevelopmentComponent> components) {
         this.antHelper = antHelper;
+
+        if (components != null) {
+            this.components.addAll(components);
+        }
     }
 
     public void execute() {
