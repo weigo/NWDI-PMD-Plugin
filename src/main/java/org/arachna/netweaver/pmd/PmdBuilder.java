@@ -8,12 +8,18 @@ import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import net.sf.json.JSONObject;
 
+import org.arachna.ant.AntHelper;
+import org.arachna.netweaver.dc.types.Compartment;
+import org.arachna.netweaver.dc.types.CompartmentState;
 import org.arachna.netweaver.dc.types.DevelopmentComponent;
 import org.arachna.netweaver.hudson.nwdi.DCWithJavaSourceAcceptingFilter;
+import org.arachna.netweaver.hudson.nwdi.IDevelopmentComponentFilter;
 import org.arachna.netweaver.hudson.nwdi.NWDIBuild;
 import org.arachna.netweaver.hudson.nwdi.NWDIProject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -21,19 +27,19 @@ import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Sample {@link Builder}.
- * 
+ *
  * <p>
  * When the user configures the project and enables this builder,
  * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
  * {@link PmdBuilder} is created. The created instance is persisted to the
  * project configuration XML by using XStream, so this allows you to use
  * instance fields (like {@link #name}) to remember the configuration.
- * 
+ *
  * <p>
  * When a build is performed, the
  * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
  * invoked.
- * 
+ *
  * @author Kohsuke Kawaguchi
  */
 public class PmdBuilder extends Builder {
@@ -57,16 +63,38 @@ public class PmdBuilder extends Builder {
     @Override
     public boolean perform(final AbstractBuild build, final Launcher launcher, final BuildListener listener) {
         final NWDIBuild nwdiBuild = (NWDIBuild)build;
+        final AntHelper antHelper = nwdiBuild.getAntHelper(listener.getLogger());
+        final File cpdFolder = new File(String.format("%s/cpd", antHelper.getPathToWorkspace()));
 
-        final Collection<DevelopmentComponent> components =
-            nwdiBuild.getAffectedDevelopmentComponents(new DCWithJavaSourceAcceptingFilter());
-
-        if (runCpd) {
-            final CpdExecutor executor = new CpdExecutor(nwdiBuild.getAntHelper(listener.getLogger()));
-            executor.execute();
+        if (!cpdFolder.exists() && !cpdFolder.mkdirs()) {
+            listener.getLogger().append(
+                String.format("Can't create CPD result folder ('%s')!", cpdFolder.getAbsolutePath()));
+            return false;
         }
 
-        for (final DevelopmentComponent component : components) {
+        IDevelopmentComponentFilter filter = new DCWithJavaSourceAcceptingFilter();
+
+        if (runCpd) {
+            long start = System.currentTimeMillis();
+            listener.getLogger().append("Running CPD...");
+
+            final Collection<DevelopmentComponent> components = new ArrayList<DevelopmentComponent>();
+
+            for (Compartment compartment : nwdiBuild.getDevelopmentConfiguration().getCompartments(
+                CompartmentState.Source)) {
+                for (DevelopmentComponent component : compartment.getDevelopmentComponents()) {
+                    if (filter.accept(component)) {
+                        components.add(component);
+                    }
+                }
+            }
+
+            final CpdExecutor executor = new CpdExecutor(antHelper, components);
+            executor.execute();
+            listener.getLogger().append(String.format("(%f sec.).\n", (System.currentTimeMillis() - start) / 1000f));
+        }
+
+        for (final DevelopmentComponent component : nwdiBuild.getAffectedDevelopmentComponents(filter)) {
 
         }
 
@@ -84,7 +112,7 @@ public class PmdBuilder extends Builder {
     /**
      * Descriptor for {@link PmdBuilder}. Used as a singleton. The class is
      * marked as public so that it can be accessed from views.
-     * 
+     *
      * <p>
      * See <tt>views/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
