@@ -51,6 +51,7 @@ public final class CpdExecutor {
     }
 
     public void execute() {
+        // FIXME: Use global excludes, i.e. exclude generated sources from CPD analysis
         final Set<String> excludes = new HashSet<String>();
         final CPDTask task = new CPDTask();
         final Project project = new Project();
@@ -78,5 +79,6 @@ public final class CpdExecutor {
         task.setMinimumTokenCount(50);
 
         task.setOutputFile(new File(String.format("%s/cpd/cpd.xml", antHelper.getPathToWorkspace())));
+        task.execute();
     }
 }
