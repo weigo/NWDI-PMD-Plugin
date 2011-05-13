@@ -43,7 +43,15 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Kohsuke Kawaguchi
  */
 public class PmdBuilder extends Builder {
+    /**
+     * Descriptor for {@link PmdBuilder}.
+     */
+    @Extension(ordinal = 1000)
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
+    /**
+     * Indicates that CPD should be run if set to <code>true</code>.
+     */
     private final boolean runCpd;
 
     // Fields in config.jelly must match the parameter names in the
@@ -106,7 +114,7 @@ public class PmdBuilder extends Builder {
     // you don't have to do this.
     @Override
     public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl)super.getDescriptor();
+        return DESCRIPTOR;
     }
 
     /**
@@ -117,15 +125,12 @@ public class PmdBuilder extends Builder {
      * See <tt>views/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
-    @Extension
-    // this marker indicates Hudson that this is an implementation of an
-    // extension point.
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
         @Override
         public boolean isApplicable(final Class<? extends AbstractProject> aClass) {
             // indicates that this builder can be used with all kinds of project
             // types
-            return NWDIProject.class.equals(aClass.getClass());
+            return NWDIProject.class.equals(aClass);
         }
 
         /**
