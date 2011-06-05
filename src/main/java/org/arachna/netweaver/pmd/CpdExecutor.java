@@ -14,6 +14,7 @@ import net.sourceforge.pmd.cpd.CPDTask;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.arachna.ant.AntHelper;
+import org.arachna.ant.ExcludeDataDictionarySourceDirectoryFilter;
 import org.arachna.netweaver.dc.types.DevelopmentComponent;
 
 /**
@@ -51,7 +52,8 @@ public final class CpdExecutor {
     }
 
     public void execute() {
-        // FIXME: Use global excludes, i.e. exclude generated sources from CPD analysis
+        // FIXME: Use global excludes, i.e. exclude generated sources from CPD
+        // analysis
         final Set<String> excludes = new HashSet<String>();
         final CPDTask task = new CPDTask();
         final Project project = new Project();
@@ -59,7 +61,11 @@ public final class CpdExecutor {
         task.setProject(project);
 
         for (final DevelopmentComponent component : components) {
-            for (final FileSet fileSet : antHelper.createSourceFileSets(component, excludes, excludes)) {
+            ExcludeDataDictionarySourceDirectoryFilter excludeDataDictionarySources =
+                new ExcludeDataDictionarySourceDirectoryFilter();
+
+            for (final FileSet fileSet : antHelper.createSourceFileSets(component, excludeDataDictionarySources,
+                excludes, excludes)) {
                 fileSet.setProject(project);
                 task.addFileset(fileSet);
             }
