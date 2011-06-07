@@ -27,19 +27,19 @@ import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Sample {@link Builder}.
- *
+ * 
  * <p>
  * When the user configures the project and enables this builder,
  * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
  * {@link PmdBuilder} is created. The created instance is persisted to the
  * project configuration XML by using XStream, so this allows you to use
  * instance fields (like {@link #name}) to remember the configuration.
- *
+ * 
  * <p>
  * When a build is performed, the
  * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
  * invoked.
- *
+ * 
  * @author Kohsuke Kawaguchi
  */
 public class PmdBuilder extends Builder {
@@ -80,17 +80,17 @@ public class PmdBuilder extends Builder {
             return false;
         }
 
-        IDevelopmentComponentFilter filter = new DCWithJavaSourceAcceptingFilter();
+        final IDevelopmentComponentFilter filter = new DCWithJavaSourceAcceptingFilter();
 
         if (runCpd) {
-            long start = System.currentTimeMillis();
+            final long start = System.currentTimeMillis();
             listener.getLogger().append("Running CPD...");
 
             final Collection<DevelopmentComponent> components = new ArrayList<DevelopmentComponent>();
 
-            for (Compartment compartment : nwdiBuild.getDevelopmentConfiguration().getCompartments(
+            for (final Compartment compartment : nwdiBuild.getDevelopmentConfiguration().getCompartments(
                 CompartmentState.Source)) {
-                for (DevelopmentComponent component : compartment.getDevelopmentComponents()) {
+                for (final DevelopmentComponent component : compartment.getDevelopmentComponents()) {
                     if (filter.accept(component)) {
                         components.add(component);
                     }
@@ -100,10 +100,6 @@ public class PmdBuilder extends Builder {
             final CpdExecutor executor = new CpdExecutor(antHelper, components);
             executor.execute();
             listener.getLogger().append(String.format("(%f sec.).\n", (System.currentTimeMillis() - start) / 1000f));
-        }
-
-        for (final DevelopmentComponent component : nwdiBuild.getAffectedDevelopmentComponents(filter)) {
-
         }
 
         return true;
@@ -120,7 +116,7 @@ public class PmdBuilder extends Builder {
     /**
      * Descriptor for {@link PmdBuilder}. Used as a singleton. The class is
      * marked as public so that it can be accessed from views.
-     *
+     * 
      * <p>
      * See <tt>views/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
