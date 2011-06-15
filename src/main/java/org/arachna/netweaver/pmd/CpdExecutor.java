@@ -56,9 +56,8 @@ public final class CpdExecutor {
         // analysis
         final Set<String> excludes = new HashSet<String>();
         final CPDTask task = new CPDTask();
-        final Project project = new Project();
 
-        task.setProject(project);
+        task.setProject(antHelper.getProject());
 
         for (final DevelopmentComponent component : components) {
             ExcludeDataDictionarySourceDirectoryFilter excludeDataDictionarySources =
@@ -66,7 +65,6 @@ public final class CpdExecutor {
 
             for (final FileSet fileSet : antHelper.createSourceFileSets(component, excludeDataDictionarySources,
                 excludes, excludes)) {
-                fileSet.setProject(project);
                 task.addFileset(fileSet);
             }
         }
