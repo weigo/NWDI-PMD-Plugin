@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="cpd" default="cpd-all">
-  <path id="classpath">
-#foreach($path in $classpaths)
-    <fileset dir="$path">
+  <path id="cpd.path">
+    <fileset dir="${cpd.dir}">
       <include name="**/*.jar" />
     </fileset>
-#end
   </path>
   
-  <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
+  <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="cpd.path" />
+
   <target name="cpd-all">
-    <cpd encoding="$encoding" language="java" ignoreIdentifiers="true" ignoreLiterals="true" minimumTokenCount="100" outputFile="$outputFile">
-      <fileset dir="/path/to/my/src">
+    <cpd encoding="$encoding" language="java" ignoreIdentifiers="true" ignoreLiterals="true" minimumTokenCount="$minimumTokenCount" outputFile="$outputFile">
+#foreach($source in $sourcePaths)
+      <fileset dir="$source">
         <include name="**/*.java"/>
 #foreach ($exclude in $excludes)
         <exclude name="$exclude" />
@@ -26,6 +26,7 @@
         </not>
 #end        
       </fileset>
+#end
     </cpd>
   </target>
 </project>
