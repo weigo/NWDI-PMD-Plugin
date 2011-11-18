@@ -2,6 +2,7 @@ package org.arachna.netweaver.pmd;
 
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.model.Build;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -73,7 +74,7 @@ public class PmdBuilder extends AntTaskBuilder {
     }
 
     @Override
-    public boolean perform(final AbstractBuild build, final Launcher launcher, final BuildListener listener) {
+    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) {
         boolean result = true;
 
         final NWDIBuild nwdiBuild = (NWDIBuild)build;
@@ -210,7 +211,7 @@ public class PmdBuilder extends AntTaskBuilder {
      */
     @Override
     protected String getAntProperties() {
-        return String.format("cpd.dir=%s/plugins/NWDI-Checkstyle-Plugin/WEB-INF/lib", Hudson.getInstance().root
+        return String.format("cpd.dir=%s/plugins/NWDI-PMD-Plugin/WEB-INF/lib", Hudson.getInstance().root
             .getAbsolutePath().replace("\\", "/"));
     }
 }
