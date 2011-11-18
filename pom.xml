@@ -1,46 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.arachna.netweaver</groupId>
-    <artifactId>NWDI-pom-Plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>org.arachna.netweaver</groupId>
+		<artifactId>NWDI-pom-Plugin</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
 
-  <groupId>org.arachna.netweaver</groupId>
-  <artifactId>NWDI-PMD-Plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
+	<groupId>org.arachna.netweaver</groupId>
+	<artifactId>NWDI-PMD-Plugin</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
-  <packaging>hpi</packaging>
+	<packaging>hpi</packaging>
 
-  <name>NWDI-PMD-Plugin</name>
-  <description>Integrate PMD into Jenkins and NWDI.</description>
-  <inceptionYear>2011</inceptionYear>
-  <scm>
-    <connection>scm:git:git://github.com/weigo/NWDI-PMD-Plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:weigo/NWDI-PMD-Plugin.git</developerConnection>
-    <url>https://github.com/weigo/NWDI-PMD-Plugin</url>
-  </scm>
-  <dependencies>
-    <dependency>
-      <groupId>org.arachna.netweaver</groupId>
-      <artifactId>NWDI-Core-Plugin</artifactId>
-      <version>1.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>pmd</groupId>
-      <artifactId>pmd</artifactId>
-      <version>4.2.5</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.apache.velocity</groupId>
-    	<artifactId>velocity</artifactId>
-    	<version>1.6.4</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-  </dependencies>
+	<name>NWDI-PMD-Plugin</name>
+	<description>Integrate PMD into Jenkins and NWDI.</description>
+	<inceptionYear>2011</inceptionYear>
+	<scm>
+		<connection>scm:git:git://github.com/weigo/NWDI-PMD-Plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:weigo/NWDI-PMD-Plugin.git</developerConnection>
+		<url>https://github.com/weigo/NWDI-PMD-Plugin</url>
+	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>org.arachna.netweaver</groupId>
+			<artifactId>NWDI-Core-Plugin</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>pmd</groupId>
+			<artifactId>pmd</artifactId>
+			<version>4.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.6.4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 </project>
