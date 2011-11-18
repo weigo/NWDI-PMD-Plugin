@@ -9,7 +9,7 @@
   <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="cpd.path" />
 
   <target name="cpd-all">
-    <cpd encoding="$encoding" language="java" ignoreIdentifiers="true" ignoreLiterals="true" minimumTokenCount="$minimumTokenCount" outputFile="$outputFile">
+    <cpd encoding="$encoding" language="java" ignoreIdentifiers="true" ignoreLiterals="true" minimumTokenCount="$minimumTokenCount" outputFile="$outputFile" format="xml">
 #foreach($source in $sourcePaths)
       <fileset dir="$source">
         <include name="**/*.java"/>
