@@ -118,7 +118,8 @@ public class PmdBuilder extends AntTaskBuilder {
             nwdiBuild.getDevelopmentConfiguration().getCompartments(CompartmentState.Source);
         generator.execute(getDevelopmentComponentsWithJavaSources(compartments));
 
-        final Ant ant = new Ant("cpd-all", null, null, buildFileName, getAntProperties());
+        // FIXME: make antOps configurable
+        final Ant ant = new Ant("cpd-all", null, "-Xmx512m", buildFileName, getAntProperties());
 
         try {
             ant.perform(nwdiBuild, launcher, listener);
