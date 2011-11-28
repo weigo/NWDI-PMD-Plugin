@@ -10,16 +10,16 @@
 
   <target name="cpd-all">
     <cpd encoding="$encoding" language="java" ignoreIdentifiers="true" ignoreLiterals="true" minimumTokenCount="$minimumTokenCount" outputFile="$outputFile" format="xml">
-#foreach($source in $sourcePaths)
-      <fileset dir="$source">
+#foreach($descriptor in $sourcePaths)
+      <fileset dir="$descriptor.getSourceFolder()">
         <include name="**/*.java"/>
-#foreach ($exclude in $excludes)
+#foreach ($exclude in $descriptor.getExcludes())
         <exclude name="$exclude" />
 #end
-#if (!$excludeContainsRegexps.isEmpty())
+#if (!$descriptor.getContainsRegexpExcludes().isEmpty())
         <not>
           <or>
-#foreach($exclude in $excludeContainsRegexps)
+#foreach($exclude in $descriptor.getContainsRegexpExcludes())
             <contains text="$exclude" />
 #end
           </or>

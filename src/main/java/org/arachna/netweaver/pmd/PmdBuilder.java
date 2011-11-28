@@ -119,7 +119,7 @@ public class PmdBuilder extends AntTaskBuilder {
         generator.execute(getDevelopmentComponentsWithJavaSources(compartments));
 
         // FIXME: make antOps configurable
-        final Ant ant = new Ant("cpd-all", null, "-Xmx512m", buildFileName, getAntProperties());
+        final Ant ant = new Ant("cpd-all", null, "-Xmx1024m", buildFileName, getAntProperties());
 
         try {
             ant.perform(nwdiBuild, launcher, listener);

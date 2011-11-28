@@ -8,13 +8,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.arachna.ant.AntHelper;
+import org.arachna.ant.ExcludesFactory;
 import org.arachna.netweaver.dc.types.DevelopmentComponent;
 
 /**
@@ -86,7 +89,7 @@ final class CpdBuildFileGenerator {
      *            development component to document with JavaDoc.
      */
     public void execute(final Collection<DevelopmentComponent> components) {
-        final Collection<String> sources = getSourcePaths(components);
+        final Collection<CpdSourceFolderDescriptor> sources = getSourcePaths(components);
 
         if (!sources.isEmpty()) {
             Writer buildFile = null;
@@ -123,7 +126,8 @@ final class CpdBuildFileGenerator {
      * @throws IOException
      *             when writing fails
      */
-    protected void evaluateContext(final Collection<String> sources, final Writer writer) throws IOException {
+    protected void evaluateContext(final Collection<CpdSourceFolderDescriptor> sources, final Writer writer)
+        throws IOException {
         final Context context = createVelocityContext(sources);
         engine.evaluate(context, writer, "cpd-all", getTemplateReader());
     }
@@ -132,13 +136,11 @@ final class CpdBuildFileGenerator {
      * @param sources
      * @return
      */
-    protected Context createVelocityContext(final Collection<String> sources) {
+    protected Context createVelocityContext(final Collection<CpdSourceFolderDescriptor> sources) {
         final Context context = new VelocityContext();
         context.put("sourcePaths", sources);
         context.put("encoding", encoding);
         context.put("outputFile", String.format("%s/cpd/cpd-result.xml", antHelper.getPathToWorkspace()));
-        context.put("excludes", excludes);
-        context.put("excludeContainsRegexps", excludes);
         context.put("minimumTokenCount", minimumTokenCount);
 
         return context;
@@ -147,11 +149,15 @@ final class CpdBuildFileGenerator {
     /**
      * @param components
      */
-    protected Collection<String> getSourcePaths(final Collection<DevelopmentComponent> components) {
-        final Collection<String> sources = new HashSet<String>();
+    protected Collection<CpdSourceFolderDescriptor> getSourcePaths(final Collection<DevelopmentComponent> components) {
+        final Collection<CpdSourceFolderDescriptor> sources = new LinkedList<CpdSourceFolderDescriptor>();
+        ExcludesFactory excludesFactory = new ExcludesFactory();
 
         for (final DevelopmentComponent component : components) {
-            sources.addAll(antHelper.createSourceFileSets(component, excludes, excludes));
+            for (String folder : antHelper.createSourceFileSets(component, excludes, excludes)) {
+                sources.add(new CpdSourceFolderDescriptor(folder, Arrays.asList(excludesFactory.create(component,
+                    excludes)), Arrays.asList(excludesFactory.createContainsRegexpExcludes(component, excludes))));
+            }
         }
 
         return sources;
