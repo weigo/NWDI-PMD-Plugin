@@ -20,7 +20,7 @@
         <not>
           <or>
 #foreach($exclude in $descriptor.getContainsRegexpExcludes())
-            <contains text="$exclude" />
+            <containsregexp expression="$exclude" />
 #end
           </or>
         </not>
