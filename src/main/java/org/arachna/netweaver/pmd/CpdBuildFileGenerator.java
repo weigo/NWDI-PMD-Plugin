@@ -154,7 +154,7 @@ final class CpdBuildFileGenerator {
         ExcludesFactory excludesFactory = new ExcludesFactory();
 
         for (final DevelopmentComponent component : components) {
-            for (String folder : antHelper.createSourceFileSets(component, excludes, excludes)) {
+            for (String folder : antHelper.createSourceFileSets(component)) {
                 sources.add(new CpdSourceFolderDescriptor(folder, Arrays.asList(excludesFactory.create(component,
                     excludes)), Arrays.asList(excludesFactory.createContainsRegexpExcludes(component, excludes))));
             }
