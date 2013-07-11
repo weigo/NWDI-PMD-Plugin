@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -27,8 +28,7 @@ import org.arachna.netweaver.dc.types.DevelopmentComponent;
  */
 final class CpdBuildFileGenerator {
     /**
-     * Helper class for setting up an ant task with class path, source file sets
-     * etc.
+     * Helper class for setting up an ant task with class path, source file sets etc.
      */
     private final AntHelper antHelper;
 
@@ -40,7 +40,7 @@ final class CpdBuildFileGenerator {
     /**
      * Excludes for filesets.
      */
-    private final HashSet<String> excludes = new HashSet<String>();
+    private final Set<String> excludes = new HashSet<String>();
 
     /**
      * Path to generated build file.
@@ -58,14 +58,12 @@ final class CpdBuildFileGenerator {
     private final String minimumTokenCount;
 
     /**
-     * Create an executor for executing the CPD ant task using the given ant
-     * helper object.
+     * Create an executor for executing the CPD ant task using the given ant helper object.
      * 
      * @param buildFilePath
      *            path to build file
      * @param antHelper
-     *            helper for populating an ant task with source filesets and
-     *            class path for a given development component
+     *            helper for populating an ant task with source filesets and class path for a given development component
      * @param engine
      *            template engine to use for generating build files.
      * @param encoding
@@ -73,8 +71,8 @@ final class CpdBuildFileGenerator {
      * @param minimumTokenCount
      *            the minimal token count for CPD analysis.
      */
-    CpdBuildFileGenerator(final String buildFilePath, final AntHelper antHelper, final VelocityEngine engine,
-        final String encoding, final String minimumTokenCount) {
+    CpdBuildFileGenerator(final String buildFilePath, final AntHelper antHelper, final VelocityEngine engine, final String encoding,
+        final String minimumTokenCount) {
         this.buildFilePath = buildFilePath;
         this.antHelper = antHelper;
         this.engine = engine;
@@ -85,8 +83,8 @@ final class CpdBuildFileGenerator {
     /**
      * Run the Ant CPD task for the given development component.
      * 
-     * @param component
-     *            development component to document with JavaDoc.
+     * @param components
+     *            development components to run CPD on.
      */
     public void execute(final Collection<DevelopmentComponent> components) {
         final Collection<CpdSourceFolderDescriptor> sources = getSourcePaths(components);
@@ -107,8 +105,7 @@ final class CpdBuildFileGenerator {
                         buildFile.close();
                     }
                     catch (final IOException e) {
-                        // TODO Auto-generated catch block
-                        // e.printStackTrace(logger);
+                        // ignore
                     }
                 }
             }
@@ -116,8 +113,7 @@ final class CpdBuildFileGenerator {
     }
 
     /**
-     * Evaluate the Velocity context with the given collection of source
-     * directories and write it into the given writer.
+     * Evaluate the Velocity context with the given collection of source directories and write it into the given writer.
      * 
      * @param sources
      *            collection of source folders
@@ -126,8 +122,7 @@ final class CpdBuildFileGenerator {
      * @throws IOException
      *             when writing fails
      */
-    protected void evaluateContext(final Collection<CpdSourceFolderDescriptor> sources, final Writer writer)
-        throws IOException {
+    protected void evaluateContext(final Collection<CpdSourceFolderDescriptor> sources, final Writer writer) throws IOException {
         final Context context = createVelocityContext(sources);
         engine.evaluate(context, writer, "cpd-all", getTemplateReader());
     }
@@ -151,12 +146,15 @@ final class CpdBuildFileGenerator {
      */
     protected Collection<CpdSourceFolderDescriptor> getSourcePaths(final Collection<DevelopmentComponent> components) {
         final Collection<CpdSourceFolderDescriptor> sources = new LinkedList<CpdSourceFolderDescriptor>();
-        ExcludesFactory excludesFactory = new ExcludesFactory();
+        final ExcludesFactory excludesFactory = new ExcludesFactory();
 
         for (final DevelopmentComponent component : components) {
-            for (String folder : antHelper.createSourceFileSets(component)) {
-                sources.add(new CpdSourceFolderDescriptor(folder, Arrays.asList(excludesFactory.create(component,
-                    excludes)), Arrays.asList(excludesFactory.createContainsRegexpExcludes(component, excludes))));
+            final Collection<String> sourceFolders = antHelper.createSourceFileSets(component);
+            sourceFolders.addAll(component.getTestSourceFolders());
+
+            for (final String folder : sourceFolders) {
+                sources.add(new CpdSourceFolderDescriptor(folder, Arrays.asList(excludesFactory.create(component, excludes)), Arrays
+                    .asList(excludesFactory.createContainsRegexpExcludes(component, excludes))));
             }
         }
 
