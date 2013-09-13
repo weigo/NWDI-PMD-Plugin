@@ -31,12 +31,16 @@ import org.kohsuke.stapler.StaplerRequest;
  * Sample {@link Builder}.
  * 
  * <p>
- * When the user configures the project and enables this builder, {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
- * {@link PmdBuilder} is created. The created instance is persisted to the project configuration XML by using XStream, so this allows you to
- * use instance fields (like {@link #name}) to remember the configuration.
+ * When the user configures the project and enables this builder,
+ * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
+ * {@link PmdBuilder} is created. The created instance is persisted to the
+ * project configuration XML by using XStream, so this allows you to use
+ * instance fields (like {@link #name}) to remember the configuration.
  * 
  * <p>
- * When a build is performed, the {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be invoked.
+ * When a build is performed, the
+ * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
+ * invoked.
  * 
  * @author Kohsuke Kawaguchi
  */
@@ -56,7 +60,8 @@ public class PmdBuilder extends AntTaskBuilder {
      * Create a new PmdBuilder instance.
      * 
      * @param runCpd
-     *            indicate whether CPD should be run (<code>true</code>) or not (<code>false</code>).
+     *            indicate whether CPD should be run (<code>true</code>) or not
+     *            (<code>false</code>).
      */
     @DataBoundConstructor
     public PmdBuilder(final boolean runCpd) {
@@ -112,7 +117,12 @@ public class PmdBuilder extends AntTaskBuilder {
         final Collection<Compartment> compartments = nwdiBuild.getDevelopmentConfiguration().getCompartments(CompartmentState.Source);
         generator.execute(getDevelopmentComponentsWithJavaSources(compartments));
 
-        result = execute(nwdiBuild, launcher, listener, "cpd-all", buildFileName, "-Xmx1024m");
+        try {
+            result = execute(nwdiBuild, launcher, listener, "cpd-all", buildFileName, "-Xmx1024m");
+        }
+        catch (final InterruptedException e) {
+            // finish build when ant task was interrupted.
+        }
 
         listener.getLogger().append(String.format("(%f sec.).\n", (System.currentTimeMillis() - start) / 1000f));
         return result;
@@ -142,14 +152,17 @@ public class PmdBuilder extends AntTaskBuilder {
     }
 
     /**
-     * Descriptor for {@link PmdBuilder}. Used as a singleton. The class is marked as public so that it can be accessed from views.
+     * Descriptor for {@link PmdBuilder}. Used as a singleton. The class is
+     * marked as public so that it can be accessed from views.
      * 
      * <p>
-     * See <tt>views/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt> for the actual HTML fragment for the configuration screen.
+     * See <tt>views/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt>
+     * for the actual HTML fragment for the configuration screen.
      */
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
         /**
-         * Will return <code>true</code> when the given project is of type {@link NWDIProject}, <code>false</code> otherwise.
+         * Will return <code>true</code> when the given project is of type
+         * {@link NWDIProject}, <code>false</code> otherwise.
          * 
          * {@inheritDoc}
          */
